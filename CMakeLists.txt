@@ -25,11 +25,43 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/3rd/eigen)
 find_package(CGAL)
 include(${CGAL_USE_FILE})
 
+find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+
 add_executable(
-  region_growing
-  src/region_growing.cpp
+  region_growing_3d
+  PlaneDetection3D/region_growing_3d.cpp
 )
 
 target_link_libraries(
-  region_growing
+  region_growing_3d
+)
+
+add_library(
+    PlaneDepth SHARED
+    PlaneDetection/Plane.h
+    PlaneDetection/PlaneData.cc
+    PlaneDetection/PlaneData.h
+    PlaneDetection/PlaneExtraction.cc
+    PlaneDetection/PlaneFitter.cc
+    PlaneDetection/PlaneFitter.h
+    PlaneDetection/PlaneSegment.cc
+    PlaneDetection/PlaneSegment.h
+    PlaneDetection/PlaneUtil.h
+)
+
+target_link_libraries(
+    PlaneDepth
+    ${OpenCV_LIBS}
+)
+
+add_executable(
+    region_growing_2d
+    PlaneDetection/test.cc
+)
+
+target_link_libraries(
+	region_growing_2d
+	PlaneDepth
 )
